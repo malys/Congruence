@@ -39,13 +39,17 @@ class APIView(ContentList):
         self.params = {
             'cql': '',
             'start': 0,
-            'limit': 20,
+            'limit': 30,
             'excerpt': 'highlight',
             'expand': 'content.space,content.history.lastUpdated,'
                       'content.history.previousVersion,space.homepage.history',
             'includeArchivedSpaces': 'false',
             'src': 'next.ui.search',
         }
+        try:
+            self.params['cql'] = properties['Parameters']['cql']
+        except:
+            self.params['cql']=''
         self.search_confluence()
         self.redraw()
 
@@ -57,9 +61,14 @@ class APIView(ContentList):
         if not query:
             env.app.alert("Query empty, aborting", 'warning')
             return
-        self.params['cql'] = f'siteSearch ~ "{query}"'
+        if self.params['cql']=='':    
+            self.params['cql'] = f'siteSearch ~ "{query}"'
+        else: 
+            self.params['cql'] =  f'siteSearch ~ "{query}" AND ' + self.params['cql'] 
+
         self.params['start'] = 0
         self.entries = self.get_entries()
+        # print ('--->' + self.params['cql'])
         self.redraw()
         if self.entries:
             self.set_focus(0)
