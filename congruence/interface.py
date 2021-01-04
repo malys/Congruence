@@ -106,7 +106,7 @@ def make_request(url, params={}, data=None, method="GET", headers={},
 
 
 def not_authenticated(response):
-    if response.status_code in [401, 403]:
+    if response.status_code in [401, 403] or '"statusCode":403' in response.text or  '"statusCode":401' in response.text :
         return True
     if (
         response.status_code == 404
